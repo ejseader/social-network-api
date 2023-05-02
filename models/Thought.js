@@ -10,12 +10,13 @@ const reactionSchema = new Schema(
       },
       reactionBody: {
         type: String,
-        required: 'Reaction is required',
+        required: true,
+        minlength: 1,
         maxlength: 280,
       },
       username: {
         type: String,
-        required: 'Username is required',
+        required: true,
       },
       createdAt: {
         type: Date,
@@ -34,19 +35,11 @@ const reactionSchema = new Schema(
 
 const thoughtSchema = new Schema(
     {
-        // set custom id to avoid confusion with parent comment's _id field
-        thoughtId: {
-            type: Schema.Types.ObjectId,
-            default: () => new Types.ObjectId(),
-        },
         thoughtText: {
             type: String,
-            required: 'Reaction is required',
+            required: true,
+            minlength: 1,
             maxlength: 280,
-        },
-        username: {
-            type: String,
-            required: 'Username is required',
         },
         createdAt: {
             type: Date,
@@ -54,11 +47,16 @@ const thoughtSchema = new Schema(
             // use getter method to format timestamp
             get: (createdAtVal) => dateFormat(createdAtVal),
         },
+        username: {
+            type: String,
+            required: true,
+        },
         reactions: [reactionSchema],
     },
     {
         toJSON: {
             getters: true,
+            virtuals: true,
         },
         id: false,
     }
@@ -68,6 +66,6 @@ thoughtSchema.virtual('reactionCount').get(function () {
     return this.reactions.length;
 });
 
-const Thought = model('Thought', thoughtSchema);
+const Thought = model('thought', thoughtSchema);
 
 module.exports = Thought;

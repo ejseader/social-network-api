@@ -4,32 +4,30 @@ const userSchema = new Schema({
   username: {
     type: String,
     unique: true,
-    required: 'Username is required',
+    required: true,
     trim: true
   }, 
   email: {
     type: String,
     unique: true,
-    required: 'Email is required',
-    match: [/.+@.+\..+/, 'Please enter a valid e-mail address']
+    required: true,
+    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please enter a valid e-mail address']
   },
   thoughts: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'Thought'
+      ref: 'thought'
     }
   ],
   friends: [
     {
-      type: Schema.Types.ObjectId,
-      ref: 'User'
+      type: Schema.Types.ObjectId, ref: 'user',
     }
   ]
 },
 {
   toJSON: {
     virtuals: true,
-    getters: true
   },
   id: false
 });
@@ -40,7 +38,7 @@ userSchema.virtual('friendCount').get(function() {
 });
 
 // create the User model using the UserSchema
-const User = model('User', userSchema);
+const User = model('user', userSchema);
 
 // export the User model
 module.exports = User;
