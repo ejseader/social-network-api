@@ -18,7 +18,7 @@ router
 
 // /api/users/:userId
 router
-.route('/:id')
+.route('/:userId')
 .get(getSingleUser)
 .put(updateUser)
 .delete(deleteUser);
@@ -26,7 +26,7 @@ router
 // /api/users/:userId/friends/:friendId
 router
 .route('/:userId/friends/:friendId')
-.post(addFriend)
+.put(addFriend)
 .delete(removeFriend);
 
 
