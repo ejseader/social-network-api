@@ -67,7 +67,7 @@ module.exports = {
   addReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
-      { $addToSet: { reactions: req.body } },
+      { $addToSet: { reaction: req.body } },
       { runValidators: true, new: true }
     )
       .then((thought) =>
@@ -81,7 +81,7 @@ module.exports = {
   removeReaction(req, res) {
     Thought.findOneAndUpdate(
       { _id: req.params.thoughtId },
-      { $pull: { reactions: req.body.reactionId }},
+      { $pull: { reaction: req.body.reactionId }},
       { runValidator: true, new: true }
     )
       .then((thought) =>
