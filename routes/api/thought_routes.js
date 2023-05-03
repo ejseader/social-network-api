@@ -12,25 +12,20 @@ const {
 
 // /api/thoughts
 router.route('/')
-  .get(getThoughts)
-  .post(createThought);
+.get(getThoughts)
+.post(createThought);
 
 // /api/thoughts/:thoughtId
 router
-  .route('/:thoughtId')
+  .route('/:id')
   .get(getSingleThought)
   .put(updateThought)
   .delete(deleteThought);
 
 // /api/thoughts/:thoughtId/reactions
-router
-  .route('/:thoughtId/reactions')
-  .post(addReaction)
-
-// /api/thoughts/:thoughtId/reactions/:reactionId
-router
-  .route('/:thoughtId/reactions/:reactionId')
-  .delete(removeReaction);
+router.route('/:thoughtId/reactions')
+.post(addReaction)
+.delete(removeReaction);
 
 
 // const Thought = require('../../models/Thought');

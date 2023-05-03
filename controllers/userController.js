@@ -1,15 +1,28 @@
 const { User, Thought } = require('../models');
 
-module.exports = {
+const userController = {
   // Get all users
   getUsers(req, res) {
     User.find({})
+      .populate({
+        path: 'thoughts',
+        select: '-__v',
+      })
+      .select('-__v')
       .then((users) => res.json(users))
       .catch((err) => res.status(500).json(err));
   },
   // Get a single user
-  getSingleUser(req, res) {
-    User.findOne({ _id: req.params.userId })
+  getSingleUser({ params }, res) {
+    User.findOne({ _id: params.id })
+      .populate({
+        path: 'thoughts',
+        select: '-__v',
+      })
+      .populate({
+        path: 'friends',
+        select: '-__v',
+      })
       .select('-__v')
       .then((user) =>
         !user
@@ -19,16 +32,16 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
   // create a new user
-  createUser(req, res) {
-    User.create(req.body)
+  createUser({ body }, res) {
+    User.create(body)
       .then((dbUser) => res.json(dbUser))
       .catch((err) => res.status(500).json(err));
 },
   // Update a user
-  updateUser(req, res) {
+  updateUser({ params, body }, res) {
     User.findOneAndUpdate(
-      { _id: req.params.userId },
-      { $set: req.body },
+      { _id: params.id },
+      body,
       { runValidators: true, new: true }
     )
       .then((user) =>
@@ -39,8 +52,8 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
   // Delete a user and associated thoughts
-  deleteUser(req, res) {
-    User.findOneAndDelete({ _id: req.params.userId })
+  deleteUser({ params }, res) {
+    User.findOneAndDelete({ _id: params.id })
       .then((user) =>
         !user
           ? res.status(404).json({ message: 'No user with that ID' })
@@ -49,10 +62,10 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   },
   // Add a friend
-  addFriend(req, res) {
+  addFriend({ params }, res) {
     User.findOneAndUpdate(
-      { _id: req.params.userId }, 
-      { $addToSet: { friends: req.params.friendId } }, 
+      { _id: params.userId }, 
+      { $addToSet: { friends: params.friendId } }, 
       { runValidators: true, new: true })
       .then((user) =>
         !user
@@ -61,10 +74,10 @@ module.exports = {
       )
   },
   // Remove a friend
-  removeFriend(req, res) {
-    return User.findOneAndUpdate(
-      { _id: req.params.userId }, 
-      { $pull: { friends: req.params.friendId } }, 
+  removeFriend({ params }, res) {
+    User.findOneAndUpdate(
+      { _id: params.userId }, 
+      { $pull: { friends: params.friendId } }, 
       { runValidators: true, new: true })
       .then((user) =>
         !user
@@ -74,3 +87,5 @@ module.exports = {
       .catch((err) => res.status(500).json(err));
   }
 };
+
+module.exports = userController;

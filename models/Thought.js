@@ -1,13 +1,40 @@
 const { Schema, model, Types } = require('mongoose');
-const reactionSchema = require('./Reaction');
-const dayjs = require('dayjs');
+const dateFormat = require('../utils/dateFormat');
+
+const reactionSchema = new Schema(
+    {
+      // set custom id to avoid confusion with parent comment's _id field
+      reactionId: {
+        type: Schema.Types.ObjectId,
+        default: () => new Types.ObjectId(),
+      },
+      reactionBody: {
+        type: String,
+        required: true,
+        minlength: 1,
+        maxlength: 280,
+      },
+      username: {
+        type: String,
+        required: true,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+        // use getter method to format timestamp
+        get: (createdAtVal) => dateFormat(createdAtVal),
+      },
+    },
+    {
+      toJSON: {
+        getters: true,
+      },
+      id: false,
+    }
+  );
 
 const thoughtSchema = new Schema(
     {
-        username: {
-            type: String,
-            required: true,
-        },
         thoughtText: {
             type: String,
             required: true,
@@ -18,9 +45,13 @@ const thoughtSchema = new Schema(
             type: Date,
             default: Date.now,
             // use getter method to format timestamp
-            get: (createdAtVal) => dayjs(createdAtVal).format('YYYY-MM-DDThh:mm:ss a'),
+            get: (createdAtVal) => dateFormat(createdAtVal),
         },
-        reaction: [reactionSchema],
+        username: {
+            type: String,
+            required: true,
+        },
+        reactions: [reactionSchema],
     },
     {
         toJSON: {
@@ -32,7 +63,7 @@ const thoughtSchema = new Schema(
 );
 
 thoughtSchema.virtual('reactionCount').get(function () {
-    return this.reaction.length;
+    return this.reactions.length;
 });
 
 const Thought = model('thought', thoughtSchema);
